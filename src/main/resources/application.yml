@@ -6,3 +6,8 @@ app:
     username: postgres
     password: password
     pool-size: 30
+
+spring:
+  security:
+    filter:
+      order: 10

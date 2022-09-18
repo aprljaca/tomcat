@@ -4,10 +4,10 @@ import com.tomcat.entity.UserEntity;
 import com.tomcat.model.RegisterRequest;
 import com.tomcat.model.RegisterResponse;
 import com.tomcat.repository.UserRepository;
+import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,16 +16,23 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Override
-    public List<RegisterResponse> getAllUsers() {
-        List<RegisterResponse> list = new ArrayList<>();
-        list.add(new RegisterResponse("Admir", "Prljaca", "062225938", "test123"));
-        return list;
-    }
+    private final Mapper mapper;
 
     @Override
     public void registerUser(RegisterRequest request) {
-        UserEntity userEntity = new UserEntity(request.getFirstName(), request.getLastName(), request.getPhoneNumber(), request.getEmail(), request.getPassword());
+        UserEntity userEntity = new UserEntity(request.getFirstName(), request.getLastName(), request.getUserName(), request.getEmail(), request.getPassword());
         userRepository.save(userEntity);
     }
+
+    @Override
+    public List<RegisterResponse> getAllUsers() {
+        List<UserEntity> users = userRepository.findAll();
+
+        return users
+                .stream()
+                .map(mapper::mapUserToRegisterDto)
+                .toList();
+    }
+
+
 }

@@ -8,6 +8,6 @@ import lombok.Getter;
 public class RegisterResponse  {
     private String firstName;
     private String lastName;
-    private String phoneNumber;
+    private String userName;
     private String email;
 }
