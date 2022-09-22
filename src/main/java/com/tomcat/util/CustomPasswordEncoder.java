@@ -16,4 +16,5 @@ public class CustomPasswordEncoder {
     public PasswordEncoder getPasswordEncoder() {
         return passwordEncoder;
     }
+
 }

@@ -1,12 +1,15 @@
 package com.tomcat.service;
 
+import com.tomcat.exception.UserAlreadyExistsException;
+import com.tomcat.model.LoginRequest;
 import com.tomcat.model.RegisterRequest;
 import com.tomcat.model.RegisterResponse;
-
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
-    public List<RegisterResponse> getAllUsers();
 
-    void registerUser(RegisterRequest request);
+    RegisterResponse registerUser(RegisterRequest request) throws UserAlreadyExistsException;
+
+    ResponseEntity<?> loginUser(LoginRequest request);
 }
+

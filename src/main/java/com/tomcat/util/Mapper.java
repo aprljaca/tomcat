@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Mapper {
-    public RegisterResponse mapUserToRegisterDto(UserEntity user) {
+    public RegisterResponse mapUserEntityToRegisterDto(UserEntity user) {
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         String userName = user.getUserName();
