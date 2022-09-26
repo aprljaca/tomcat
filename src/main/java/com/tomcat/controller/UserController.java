@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registerUser(@RequestBody RegisterRequest request) throws UserAlreadyExistsException {
         RegisterResponse user = userService.registerUser(request);
-        return new ResponseEntity<>(user,HttpStatus.CREATED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -37,17 +37,17 @@ public class UserController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<?> validateToken(@RequestParam String token, @AuthenticationPrincipal UserEntity userEntity){
-        try{
+    public ResponseEntity<?> validateToken(@RequestParam String token, @AuthenticationPrincipal UserEntity userEntity) {
+        try {
             Boolean isTokenValid = jwtUtil.validateToken(token, userEntity);
             return ResponseEntity.ok(isTokenValid);
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             return ResponseEntity.ok(false);
         }
     }
 
     @PostMapping("/create")
-    public void create(@AuthenticationPrincipal UserEntity userEntity, @RequestBody LoginRequest request){
+    public void create(@AuthenticationPrincipal UserEntity userEntity, @RequestBody LoginRequest request) {
         System.out.println(userEntity.getUserName());
         System.out.println(request.getUserName());
     }

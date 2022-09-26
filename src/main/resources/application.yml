@@ -4,15 +4,27 @@ server:
     include-message: always
     include-binding-errors: always
 
-
-app:
+spring:
   datasource:
     jdbc-url: jdbc:postgresql://localhost:5432/tomcatdb
     username: postgres
     password: password
     pool-size: 30
 
-spring:
   security:
     filter:
       order: 10
+
+  mail:
+    from: "tomcat.mailer1@gmail.com"
+    title: "Here's the link to reset your password"
+    host: smtp.gmail.com
+    port: '587'
+    username: "tomcat.mailer1@gmail.com"
+    password: geycznagdteixlsz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

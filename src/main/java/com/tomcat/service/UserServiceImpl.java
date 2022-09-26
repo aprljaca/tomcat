@@ -2,10 +2,8 @@ package com.tomcat.service;
 
 import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.UserAlreadyExistsException;
-import com.tomcat.model.LoginRequest;
-import com.tomcat.model.LoginResponse;
-import com.tomcat.model.RegisterRequest;
-import com.tomcat.model.RegisterResponse;
+import com.tomcat.exception.UserNotFoundException;
+import com.tomcat.model.*;
 import com.tomcat.repository.UserRepository;
 import com.tomcat.util.JwtUtil;
 import com.tomcat.util.Mapper;
@@ -40,11 +38,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterResponse registerUser(RegisterRequest request) throws UserAlreadyExistsException {
 
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("User already exists");
         }
 
-        if(userRepository.findByUserName(request.getUserName()).isPresent()){
+        if (userRepository.findByUserName(request.getUserName()).isPresent()) {
             throw new UserAlreadyExistsException("This email is already in use");
         }
         UserEntity userEntity = new UserEntity(request.getFirstName(), request.getLastName(), request.getUserName(), request.getEmail(), bCryptPasswordEncoder.encode(request.getPassword()));
@@ -56,20 +54,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<LoginResponse> loginUser(LoginRequest request) throws BadCredentialsException {
         System.out.println("tusam1");
-            Optional<UserEntity> user = userRepository.findByUserName(request.getUserName());
+        Optional<UserEntity> user = userRepository.findByUserName(request.getUserName());
 
-            boolean isValidUser = (user.isPresent()) && (bCryptPasswordEncoder.matches(request.getPassword(), user.get().getPassword()));
-            if (!isValidUser) {
-                throw new BadCredentialsException("Bad credentials! Username and/or password incorrect!");
+        boolean isValidUser = (user.isPresent()) && (bCryptPasswordEncoder.matches(request.getPassword(), user.get().getPassword()));
+        if (!isValidUser) {
+            throw new BadCredentialsException("Bad credentials! Username and/or password incorrect!");
 
-            }
+        }
         System.out.println("tusam2");
-            return ResponseEntity.ok()
-                    .header(
-                            HttpHeaders.AUTHORIZATION,
-                            jwtUtil.generateToken(user.get())
-                    )
-                    .body(mapper.mapUserToLoginDto(user.get()));
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.AUTHORIZATION,
+                        jwtUtil.generateToken(user.get())
+                )
+                .body(mapper.mapUserToLoginDto(user.get()));
+    }
+
+    @Override
+    public User findUserByEmail(String email) throws UserNotFoundException {
+        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+        if (userEntity.isEmpty()) {
+            throw new UserNotFoundException("Can't find user by email!");
+        }
+        return mapper.mapUserEntityToUserDto(userEntity.get());
     }
 
 }

@@ -6,3 +6,10 @@ CREATE TABLE IF NOT EXISTS "users" (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "reset_token" (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(36) NOT NULL,
+    expiration_time TIMESTAMPTZ NOT NULL,
+    user_id SERIAL UNIQUE NOT NULL
+);
