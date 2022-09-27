@@ -53,7 +53,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<LoginResponse> loginUser(LoginRequest request) throws BadCredentialsException {
-        System.out.println("tusam1");
         Optional<UserEntity> user = userRepository.findByUserName(request.getUserName());
 
         boolean isValidUser = (user.isPresent()) && (bCryptPasswordEncoder.matches(request.getPassword(), user.get().getPassword()));
@@ -61,7 +60,6 @@ public class UserServiceImpl implements UserService {
             throw new BadCredentialsException("Bad credentials! Username and/or password incorrect!");
 
         }
-        System.out.println("tusam2");
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.AUTHORIZATION,

@@ -16,6 +16,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/v1")
@@ -26,7 +28,7 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> registerUser(@RequestBody RegisterRequest request) throws UserAlreadyExistsException {
+    public ResponseEntity<RegisterResponse> registerUser(@Valid @RequestBody RegisterRequest request) throws UserAlreadyExistsException {
         RegisterResponse user = userService.registerUser(request);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
@@ -48,8 +50,8 @@ public class UserController {
 
     @PostMapping("/create")
     public void create(@AuthenticationPrincipal UserEntity userEntity, @RequestBody LoginRequest request) {
-        System.out.println(userEntity.getUserName());
-        System.out.println(request.getUserName());
+        //System.out.println(userEntity.getUserName());
+        //System.out.println(request.getUserName());
     }
 
 }

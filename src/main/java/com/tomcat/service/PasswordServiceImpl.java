@@ -9,12 +9,14 @@ import com.tomcat.repository.PasswordResetRepository;
 import com.tomcat.repository.UserRepository;
 import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -24,7 +26,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class PasswordServiceImpl implements PasswordService {
 
-    private static final int EXPIRATION_TIME = 100;
+    private static final int EXPIRATION_TIME = 30;
 
     private final UserRepository userRepository;
 
@@ -46,9 +48,17 @@ public class PasswordServiceImpl implements PasswordService {
         if (userEntity.isEmpty()) {
             throw new UserNotFoundException("Can't find user!");
         }
-        //TODO->onemogućiti da isti korisnik može imati dva tokena u tabeli istovremeno, pozvati metodu finById i baciti izuzetak
-        PasswordResetEntity passwordResetEntity = new PasswordResetEntity(token, calculateExpirationTime(), userEntity.get().getId());
-        passwordResetRepository.save(passwordResetEntity);
+
+        Long userId = userEntity.get().getId();
+
+        Optional<PasswordResetEntity> passwordResetEntity = passwordResetRepository.findByUserId(userId);
+
+        if(passwordResetEntity.isPresent()){
+            passwordResetRepository.delete(passwordResetEntity.get());
+        }
+
+        PasswordResetEntity passwordResetEntity1 = new PasswordResetEntity(token, calculateExpirationTime(), userId);
+        passwordResetRepository.save(passwordResetEntity1);
     }
 
     @Override
@@ -66,23 +76,19 @@ public class PasswordServiceImpl implements PasswordService {
         }
     }
 
-    /*@Override
-    public User getUserByPasswordResetToken(String token) throws UserNotFoundException {
-        Optional<PasswordResetEntity> passwordResetEntity = passwordResetRepository.findByToken(token);
-        if (passwordResetEntity.isEmpty()) {
-            throw new UserNotFoundException("User with this token not exist!");
-        }
-        return mapper.mapUserEntityToUserDto(passwordResetEntity.get().getUserEntity());
-    }*/
-
     @Override
     public User getUserByPasswordResetToken(String token) throws UserNotFoundException {
         Optional<PasswordResetEntity> passwordResetEntity = passwordResetRepository.findByToken(token);
         if (passwordResetEntity.isEmpty()) {
             throw new UserNotFoundException("User with this token not exist!");
         }
-        //testiratiiiiiiiiiiiiiiiiiiii
-        return mapper.mapUserEntityToUserDto(userRepository.findById(passwordResetEntity.get().getUserId()).get());
+
+        Long userId = passwordResetEntity.get().getUserId();
+
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new UserNotFoundException("User not exist!");
+        }
+        return mapper.mapUserEntityToUserDto(userRepository.findById(userId).get());
     }
 
     @Override
@@ -162,6 +168,26 @@ public class PasswordServiceImpl implements PasswordService {
         }
         checkIfValidOldPassword(user, password.getOldPassword());
         setNewPassword(user, password.getNewPassword());
+    }
+
+    @Scheduled(fixedDelay = 5 * 60 * 1000, initialDelay = 15 * 60 * 1000)
+    public void deleteExpiredTokens() throws InvalidTokenException {
+        List<PasswordResetEntity> entities = passwordResetRepository.findAll();
+
+        for (PasswordResetEntity entity : entities) {
+
+            Optional<PasswordResetEntity> passwordResetEntity = passwordResetRepository.findByToken(entity.getToken());
+            if (passwordResetEntity.isEmpty()) {
+                throw new InvalidTokenException("Invalid token!");
+            }
+
+            OffsetDateTime calendar = OffsetDateTime.now();
+            OffsetDateTime expTime = passwordResetEntity.get().getExpirationTime();
+            if (calendar.compareTo(expTime) > 0) {
+                passwordResetRepository.delete(passwordResetEntity.get());
+            }
+
+        }
     }
 
     private String passwordResetTokenMail(String token) {

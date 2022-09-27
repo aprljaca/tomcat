@@ -24,4 +24,6 @@ public interface PasswordService {
     void saveNewPassword(String token, Password password) throws InvalidTokenException, ExpiredTokenException, UserNotFoundException;
 
     void changePassword(Password password) throws UserNotFoundException, InvalidOldPasswordException;
+
+    void deleteExpiredTokens() throws InvalidTokenException, ExpiredTokenException;
 }
