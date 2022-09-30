@@ -38,6 +38,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterResponse registerUser(RegisterRequest request) throws UserAlreadyExistsException {
 
+        if (request.getFirstName().equals("") || request.getLastName().equals("") || request.getUserName().equals("")) {
+            throw new BadCredentialsException("Bad credentials! Field can not be empty!");
+        }
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("User already exists");
         }
@@ -45,6 +49,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
             throw new UserAlreadyExistsException("This email is already in use");
         }
+
         UserEntity userEntity = new UserEntity(request.getFirstName(), request.getLastName(), request.getUserName(), request.getEmail(), bCryptPasswordEncoder.encode(request.getPassword()));
         userRepository.save(userEntity);
 
