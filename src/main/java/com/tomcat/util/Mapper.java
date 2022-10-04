@@ -1,11 +1,15 @@
 package com.tomcat.util;
 
+import com.tomcat.entity.PostEntity;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.model.LoginResponse;
+import com.tomcat.model.CreatePostResponse;
 import com.tomcat.model.RegisterResponse;
 
 import com.tomcat.model.User;
 import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
 
 @Component
 public class Mapper {
@@ -16,6 +20,14 @@ public class Mapper {
         String email = user.getEmail();
 
         return new RegisterResponse(firstName, lastName, userName, email);
+    }
+
+    public CreatePostResponse mapPostEntityToPostDto(PostEntity post) {
+        Long userId = post.getUserId();
+        String text = post.getText();
+        OffsetDateTime createdTime = post.getCreatedTime();
+
+        return new CreatePostResponse(userId, text, createdTime);
     }
 
     public LoginResponse mapUserToLoginDto(UserEntity user) {

@@ -17,7 +17,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/v1")
+@RequestMapping(path = "/api/v1")
 public class PasswordController {
 
     private final PasswordService passwordService;

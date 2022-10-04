@@ -13,3 +13,25 @@ CREATE TABLE IF NOT EXISTS "reset_token" (
     expiration_time TIMESTAMPTZ NOT NULL,
     user_id SERIAL UNIQUE NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "post" (
+    id SERIAL PRIMARY KEY,
+    text VARCHAR(300) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL,
+    user_id SERIAL UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "comment" (
+    id SERIAL PRIMARY KEY,
+    post_id SERIAL NOT NULL,
+    user_id SERIAL NOT NULL,
+    text VARCHAR(300) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "like" (
+    id SERIAL PRIMARY KEY,
+    post_id SERIAL NOT NULL,
+    user_id SERIAL NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL
+);
