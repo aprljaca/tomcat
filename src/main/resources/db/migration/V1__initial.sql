@@ -7,21 +7,21 @@ CREATE TABLE IF NOT EXISTS "users" (
     password VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "reset_token" (
+CREATE TABLE IF NOT EXISTS "reset_tokens" (
     id SERIAL PRIMARY KEY,
     token VARCHAR(36) NOT NULL,
     expiration_time TIMESTAMPTZ NOT NULL,
     user_id SERIAL UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "post" (
+CREATE TABLE IF NOT EXISTS "posts" (
     id SERIAL PRIMARY KEY,
     text VARCHAR(300) NOT NULL,
     created_time TIMESTAMPTZ NOT NULL,
-    user_id SERIAL UNIQUE NOT NULL
+    user_id SERIAL NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "comment" (
+CREATE TABLE IF NOT EXISTS "comments" (
     id SERIAL PRIMARY KEY,
     post_id SERIAL NOT NULL,
     user_id SERIAL NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS "comment" (
     created_time TIMESTAMPTZ NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "like" (
+CREATE TABLE IF NOT EXISTS "likes" (
     id SERIAL PRIMARY KEY,
     post_id SERIAL NOT NULL,
     user_id SERIAL NOT NULL,

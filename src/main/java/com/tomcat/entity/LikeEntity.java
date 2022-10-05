@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "like")
+@Table(name = "likes")
 public class LikeEntity {
 
     @Id
@@ -26,4 +26,10 @@ public class LikeEntity {
 
     @Column(name = "created_time")
     private OffsetDateTime createdTime;
+
+    public LikeEntity(Long postId, Long userId, OffsetDateTime createdTime) {
+        this.postId = postId;
+        this.userId = userId;
+        this.createdTime = createdTime;
+    }
 }

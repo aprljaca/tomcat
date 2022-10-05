@@ -6,7 +6,7 @@ import lombok.Getter;
 @Data
 @Getter
 @AllArgsConstructor
-public class LoginRequest {
-    private String userName;
-    private String password;
+public class SetLikeRequest {
+    private Long postId;
+    private Long userId;
 }

@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "reset_token")
+@Table(name = "reset_tokens")
 public class PasswordResetEntity {
 
     @Id

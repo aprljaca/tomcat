@@ -2,10 +2,11 @@ package com.tomcat.model;
 
 import com.tomcat.validation.CustomPassword;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.Email;
-
+@Data
 @Getter
 @AllArgsConstructor
 public class RegisterRequest {

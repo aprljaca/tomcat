@@ -1,8 +1,11 @@
 package com.tomcat.repository;
 
 import com.tomcat.entity.PostEntity;
-import com.tomcat.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PostRepository  extends JpaRepository<PostEntity, Long> {
+import java.util.List;
+@Repository
+public interface PostRepository extends JpaRepository<PostEntity, Long> {
+    List<PostEntity> findAllByUserId(Long userId);
 }

@@ -1,15 +1,16 @@
 package com.tomcat.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-
+@Data
 @Getter
 @AllArgsConstructor
-public class ProfileData {
+@NoArgsConstructor
+public class ProfileInformation {
     private String firstName;
     private String lastName;
     private String userName;
-    private HashMap<Long, PostData> posts;
 }

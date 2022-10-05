@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "post")
+@Table(name = "posts")
 public class PostEntity {
 
     @Id

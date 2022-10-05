@@ -48,10 +48,4 @@ public class UserController {
         }
     }
 
-    @PostMapping("/create")
-    public void create(@AuthenticationPrincipal UserEntity userEntity, @RequestBody LoginRequest request) {
-        //System.out.println(userEntity.getUserName());
-        //System.out.println(request.getUserName());
-    }
-
 }

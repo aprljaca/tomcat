@@ -3,6 +3,7 @@ package com.tomcat.controller;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.model.CreatePostRequest;
 import com.tomcat.model.CreatePostResponse;
+import com.tomcat.model.SetLikeRequest;
 import com.tomcat.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,15 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/createPost")
-    public ResponseEntity<CreatePostResponse> createPost(@AuthenticationPrincipal UserEntity userEntity, @RequestBody CreatePostRequest request) {
+    public ResponseEntity<CreatePostResponse> createPost(@RequestBody CreatePostRequest request, @AuthenticationPrincipal UserEntity userEntity) {
         CreatePostResponse user = postService.createPost(userEntity, request);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/setLike")
+    public ResponseEntity<?> setLike(@RequestBody SetLikeRequest request){
+        postService.setLike(request);
+        return new ResponseEntity<>("Liked", HttpStatus.CREATED);
     }
 
 }
