@@ -9,11 +9,13 @@ spring:
     username: postgres
     password: password
     pool-size: 30
-
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   security:
     filter:
       order: 10
-
   mail:
     from: "tomcat.mailer1@gmail.com"
     title: "Here's the link to reset your password"

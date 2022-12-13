@@ -48,4 +48,9 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getUserId")
+    public ResponseEntity<?> getUserId(@AuthenticationPrincipal UserEntity userEntity) {
+        return new ResponseEntity<>(userEntity.getId(), HttpStatus.OK);
+    }
+
 }

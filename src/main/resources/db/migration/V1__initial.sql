@@ -35,3 +35,11 @@ CREATE TABLE IF NOT EXISTS "likes" (
     user_id SERIAL NOT NULL,
     created_time TIMESTAMPTZ NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "profil_images" (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    image_path VARCHAR(300) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    user_id SERIAL UNIQUE NOT NULL
+);

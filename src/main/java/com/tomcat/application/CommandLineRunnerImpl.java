@@ -19,8 +19,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     private final LikeRepository likeRepository;
 
-
-
     @Override
     public void run(String... args) throws Exception {
         passwordService.deleteExpiredTokens();

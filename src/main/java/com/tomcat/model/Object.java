@@ -7,6 +7,6 @@ import lombok.Getter;
 @Data
 @Getter
 @AllArgsConstructor
-public class Email {
-    private String email;
+public class Object {
+    private String object;
 }
