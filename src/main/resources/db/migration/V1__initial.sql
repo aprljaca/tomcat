@@ -43,3 +43,9 @@ CREATE TABLE IF NOT EXISTS "profil_images" (
     type VARCHAR(100) NOT NULL,
     user_id SERIAL UNIQUE NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "follows" (
+    id SERIAL PRIMARY KEY,
+    follower_id SERIAL NOT NULL,
+    following_id SERIAL NOT NULL
+);
