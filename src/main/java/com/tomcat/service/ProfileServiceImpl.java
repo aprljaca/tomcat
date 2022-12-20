@@ -1,17 +1,12 @@
 package com.tomcat.service;
 
-import com.tomcat.entity.CommentEntity;
-import com.tomcat.entity.LikeEntity;
-import com.tomcat.entity.PostEntity;
-import com.tomcat.entity.UserEntity;
+import com.tomcat.entity.*;
 import com.tomcat.exception.UserNotFoundException;
 import com.tomcat.model.Post;
 import com.tomcat.model.ProfileInformation;
-import com.tomcat.repository.CommentRepository;
-import com.tomcat.repository.LikeRepository;
-import com.tomcat.repository.PostRepository;
-import com.tomcat.repository.UserRepository;
+import com.tomcat.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +21,11 @@ public class ProfileServiceImpl implements ProfileService {
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+
+    private final ImageRepository imageRepository;
+
+    @Autowired
+    private final ImageService imageService;
 
     @Override
     public List<Post> getProfilePosts(Long userId) throws UserNotFoundException {
@@ -51,9 +51,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileInformation getProfileInformation(Long userId) throws UserNotFoundException {
         Optional<UserEntity> userEntity = userRepository.findById(userId);
+        Optional<ProfileImageEntity> imageEntity = imageRepository.findByUserId(userId);
         if (userEntity.isEmpty()) {
             throw new UserNotFoundException("Can't find user by id!");
         }
-        return new ProfileInformation(userEntity.get().getFirstName(), userEntity.get().getLastName(), userEntity.get().getUserName());
+        return new ProfileInformation(userId, userEntity.get().getFirstName(), userEntity.get().getLastName(), userEntity.get().getUserName(), imageService.downloadImage(userId));
     }
 }

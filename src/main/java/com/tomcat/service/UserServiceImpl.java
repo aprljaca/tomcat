@@ -1,6 +1,6 @@
 package com.tomcat.service;
 
-import com.tomcat.entity.ProfilImageEntity;
+import com.tomcat.entity.ProfileImageEntity;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.UserAlreadyExistsException;
 import com.tomcat.exception.UserNotFoundException;
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
 
         Long userId = userRepository.findByUserName(request.getUserName()).get().getId();
-        imageRepository.save(new ProfilImageEntity("template.png", "image/png", "C:/Users/Admir/Desktop/Visual Studio Code Projects/tomcat-react/public/images/template.png", userId));
+        imageRepository.save(new ProfileImageEntity("template.png", "image/png", "C:/Users/Admir/Desktop/Visual Studio Code Projects/tomcat-react/public/images/template.png", userId));
 
         return mapper.mapUserEntityToRegisterDto(userEntity);
     }

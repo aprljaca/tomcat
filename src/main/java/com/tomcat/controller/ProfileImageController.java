@@ -1,8 +1,6 @@
 package com.tomcat.controller;
 
 import com.tomcat.entity.UserEntity;
-import com.tomcat.model.Email;
-import com.tomcat.model.Object;
 import com.tomcat.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1")
-public class ProfilImageController {
+public class ProfileImageController {
 
     @Autowired
     private ImageService imageService;
@@ -30,9 +28,7 @@ public class ProfilImageController {
     }
 
     @GetMapping("/downloadImage")
-    public ResponseEntity<Object> downloadImage(@RequestParam("userId") Long userId) {
-        String imagePath = imageService.downloadImage(userId);
-        Object imageName = new Object(imagePath);
-        return new ResponseEntity<>(imageName, HttpStatus.OK);
+    public String downloadImage(@RequestParam("userId") Long userId) {
+        return imageService.downloadImage(userId);
     }
 }

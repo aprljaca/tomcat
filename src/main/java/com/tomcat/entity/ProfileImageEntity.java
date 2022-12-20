@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -14,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProfilImageEntity {
+public class ProfileImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,7 @@ public class ProfilImageEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    public ProfilImageEntity(String name, String type, String imagePath, Long userId) {
+    public ProfileImageEntity(String name, String type, String imagePath, Long userId) {
         this.name = name;
         this.type = type;
         this.imagePath = imagePath;

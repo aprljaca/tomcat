@@ -1,7 +1,8 @@
 package com.tomcat.service;
 
-import com.tomcat.entity.ProfilImageEntity;
+import com.tomcat.entity.ProfileImageEntity;
 import com.tomcat.entity.UserEntity;
+import com.tomcat.model.Object;
 import com.tomcat.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +23,18 @@ public class ImageServiceImpl implements ImageService {
     public String uploadImage(MultipartFile file, UserEntity userEntity) throws IOException {
         String folderPath = "C:/Users/Admir/Desktop/Visual Studio Code Projects/tomcat-react/public/images/";
         String imagePath = folderPath + file.getOriginalFilename();
-        Optional<ProfilImageEntity> profilImageEntity = imageRepository.findByUserId(userEntity.getId());
+        Optional<ProfileImageEntity> profilImageEntity = imageRepository.findByUserId(userEntity.getId());
         if (profilImageEntity.isPresent()) {
             imageRepository.delete(profilImageEntity.get());
         }
-        imageRepository.save(new ProfilImageEntity(file.getOriginalFilename(), file.getContentType(), imagePath, userEntity.getId()));
+        imageRepository.save(new ProfileImageEntity(file.getOriginalFilename(), file.getContentType(), imagePath, userEntity.getId()));
         file.transferTo(new File(imagePath));
         return "file uploaded successfully : " + file.getOriginalFilename();
     }
 
     public String downloadImage(Long userId) {
-        Optional<ProfilImageEntity> dbImageData = imageRepository.findByUserId(userId);
-        return dbImageData.get().getName();
+        Optional<ProfileImageEntity> dbImageData = imageRepository.findByUserId(userId);
+        String imageName = dbImageData.get().getName();
+        return "http://127.0.0.1:8888/"+imageName;
     }
 }

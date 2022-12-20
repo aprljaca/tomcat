@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileInformation {
+    private Long userId;
     private String firstName;
     private String lastName;
     private String userName;
+    private String profileImage;
+    
 }

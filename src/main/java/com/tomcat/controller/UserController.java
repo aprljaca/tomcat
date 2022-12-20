@@ -3,6 +3,7 @@ package com.tomcat.controller;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.UserAlreadyExistsException;
 import com.tomcat.model.LoginRequest;
+import com.tomcat.model.ProfileInformation;
 import com.tomcat.model.RegisterRequest;
 import com.tomcat.model.RegisterResponse;
 import com.tomcat.service.UserService;
