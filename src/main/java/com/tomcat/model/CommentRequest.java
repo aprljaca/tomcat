@@ -7,6 +7,8 @@ import lombok.Getter;
 @Data
 @Getter
 @AllArgsConstructor
-public class Object {
-    private String object;
+public class CommentRequest {
+    private Long postId;
+    private String text;
 }
+

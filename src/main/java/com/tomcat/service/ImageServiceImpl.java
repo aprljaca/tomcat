@@ -2,7 +2,6 @@ package com.tomcat.service;
 
 import com.tomcat.entity.ProfileImageEntity;
 import com.tomcat.entity.UserEntity;
-import com.tomcat.model.Object;
 import com.tomcat.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

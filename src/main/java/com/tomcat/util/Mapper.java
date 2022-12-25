@@ -1,12 +1,10 @@
 package com.tomcat.util;
 
+import com.tomcat.entity.CommentEntity;
 import com.tomcat.entity.PostEntity;
 import com.tomcat.entity.UserEntity;
-import com.tomcat.model.LoginResponse;
-import com.tomcat.model.CreatePostResponse;
-import com.tomcat.model.RegisterResponse;
+import com.tomcat.model.*;
 
-import com.tomcat.model.User;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -47,6 +45,10 @@ public class Mapper {
         String password = user.getPassword();
 
         return new User(firstName, lastName, userName, email, password);
+    }
+
+    public CommentInformation mapCommentEntityToCommentInformationDto(CommentEntity entity, String firstName, String lastName, String profilImage, String createdTime) {
+        return new CommentInformation(entity.getPostId(), firstName, lastName, entity.getText(), profilImage, createdTime);
     }
 
 }

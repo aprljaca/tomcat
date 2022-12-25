@@ -38,7 +38,7 @@ public class FollowController {
     }
 
     @GetMapping("/userFollowing")
-    public List<ProfileInformation> userFollowing(@RequestParam("userId") Long userId){
-         return followService.getFollowing(userId);
+    public List<ProfileInformation> userFollowing(@RequestParam("userId") Long userId) {
+        return followService.getFollowing(userId);
     }
 }

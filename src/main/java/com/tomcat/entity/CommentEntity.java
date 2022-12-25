@@ -28,4 +28,11 @@ public class CommentEntity {
 
     @Column(name = "created_time")
     private OffsetDateTime createdTime;
+
+    public CommentEntity(Long postId, Long userId, String text, OffsetDateTime now) {
+        this.postId = postId;
+        this.userId = userId;
+        this.text = text;
+        this.createdTime = now;
+    }
 }
