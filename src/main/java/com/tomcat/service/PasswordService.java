@@ -1,5 +1,6 @@
 package com.tomcat.service;
 
+import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.*;
 import com.tomcat.model.Password;
 import com.tomcat.model.User;
@@ -23,7 +24,7 @@ public interface PasswordService {
 
     void saveNewPassword(String token, Password password) throws InvalidTokenException, ExpiredTokenException, UserNotFoundException;
 
-    void changePassword(Password password) throws UserNotFoundException, InvalidOldPasswordException;
+    void changePassword(User user, Password password) throws UserNotFoundException, InvalidOldPasswordException;
 
     void deleteExpiredTokens() throws InvalidTokenException, ExpiredTokenException;
 }

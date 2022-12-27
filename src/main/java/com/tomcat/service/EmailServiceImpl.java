@@ -10,9 +10,9 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    private String email;
+    private final String email;
 
-    private String subject;
+    private final String subject;
 
     public EmailServiceImpl(JavaMailSender mailSender, @Value("${spring.mail.from}") String email, @Value("${spring.mail.title}") String subject) {
         this.mailSender = mailSender;
@@ -20,6 +20,7 @@ public class EmailServiceImpl implements EmailService {
         this.subject = subject;
     }
 
+    @Override
     public void send(String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(email);

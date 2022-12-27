@@ -1,6 +1,9 @@
 package com.tomcat.service;
 
-import com.tomcat.entity.*;
+import com.tomcat.entity.CommentEntity;
+import com.tomcat.entity.LikeEntity;
+import com.tomcat.entity.PostEntity;
+import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.BadRequestException;
 import com.tomcat.exception.UserNotFoundException;
 import com.tomcat.model.*;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,20 +38,24 @@ public class PostServiceImpl implements PostService {
 
     private final ImageService imageService;
 
+    private final FollowService followService;
+
     @Override
-    public CreatePostResponse createPost(UserEntity userEntity, CreatePostRequest request) throws BadRequestException {
+    public CreatePostResponse createPost(User user, CreatePostRequest request) throws BadRequestException {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
         if (request.getText().isEmpty()) {
             throw new BadRequestException("Post text can not be empty!");
         }
-        PostEntity post = new PostEntity(request.getText(), OffsetDateTime.now(), userEntity.getId());
+        PostEntity post = new PostEntity(request.getText(), OffsetDateTime.now(), userEntity.get().getId());
         postRepository.save(post);
         return mapper.mapPostEntityToPostDto(post);
     }
 
     @Override
-    public void setLike(UserEntity userEntity, Post post) {
-        if (!isLiked(userEntity, post.getPostId())) {
-            LikeEntity like = new LikeEntity(post.getPostId(), userEntity.getId(), OffsetDateTime.now());
+    public void setLike(User user, Post post) {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
+        if (!isLiked(user, post.getPostId())) {
+            LikeEntity like = new LikeEntity(post.getPostId(), userEntity.get().getId(), OffsetDateTime.now());
             likeRepository.save(like);
         }
     }
@@ -62,27 +70,63 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Boolean isLiked(UserEntity userEntity, Long postId) {
-        Optional<LikeEntity> likeEntity = likeRepository.findLike(userEntity.getId(), postId);
+    public Boolean isLiked(User user, Long postId) {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
+        Optional<LikeEntity> likeEntity = likeRepository.findLike(userEntity.get().getId(), postId);
         return likeEntity.isPresent();
     }
 
     @Override
-    public void setDislike(UserEntity userEntity, Post post) throws BadRequestException {
-        if (!isLiked(userEntity, post.getPostId())) {
+    public void setDislike(User user, Post post) throws BadRequestException {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
+        if (!isLiked(user, post.getPostId())) {
             throw new BadRequestException("Bad request!");
         }
-        Optional<LikeEntity> likeEntity = likeRepository.findLike(userEntity.getId(), post.getPostId());
+        Optional<LikeEntity> likeEntity = likeRepository.findLike(userEntity.get().getId(), post.getPostId());
         likeRepository.delete(likeEntity.get());
     }
 
     @Override
-    public List<Post> getFollowingPosts(UserEntity userEntity) throws UserNotFoundException {
-        return null;
+    public List<Post> getFollowingPosts(User user) {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
+
+        List<ProfileInformation> followingProfiles = followService.getFollowing(userEntity.get().getId());
+
+        List<Long> followingUsersIds = new ArrayList<>();
+
+        for (ProfileInformation p : followingProfiles) {
+            followingUsersIds.add(p.getUserId());
+        }
+
+        List<PostEntity> postEntitie = postRepository.findyAllByUserIdList(followingUsersIds);
+        List<Post> postList = new ArrayList<>();
+
+        for (PostEntity postEntity : postEntitie) {
+            List<LikeEntity> likeEntityList = likeRepository.findAllByPostId(postEntity.getId());
+            List<CommentEntity> commentEntityList = commentRepository.findAllByPostId(postEntity.getId());
+
+            List<CommentInformation> commentInformationList = new ArrayList<>();
+            for (CommentEntity commentEntity : commentEntityList) {
+                Optional<UserEntity> commentBy = userRepository.findById(commentEntity.getUserId());
+                commentInformationList
+                        .add(mapper.mapCommentEntityToCommentInformationDto(commentEntity, commentBy.get().getFirstName(), commentBy.get().getLastName(),
+                                imageService.downloadImage(commentEntity.getUserId()), calculateDuration(commentEntity.getCreatedTime())));
+            }
+
+            Optional<UserEntity> postBy = userRepository.findById(postEntity.getUserId());
+            Post post = new Post(postEntity.getId(), postEntity.getUserId(), postBy.get().getFirstName(), postBy.get().getLastName(), postEntity.getText(),
+                    calculateDuration(postEntity.getCreatedTime()), likeEntityList.size(), commentEntityList.size(), imageService.downloadImage(postBy.get().getId()), commentInformationList,
+                    isLiked(user, postEntity.getId()));
+
+            postList.add(post);
+        }
+        Collections.reverse(postList);
+        return postList;
     }
 
+
     @Override
-    public List<Post> getProfilePosts(UserEntity loggedUser, Long userId) throws UserNotFoundException {
+    public List<Post> getProfilePosts(User loggedUser, Long userId) throws UserNotFoundException {
         Optional<UserEntity> userEntity = userRepository.findById(userId);
         if (userEntity.isEmpty()) {
             throw new UserNotFoundException("Can't find user by id!");
@@ -108,6 +152,7 @@ public class PostServiceImpl implements PostService {
 
             postList.add(post);
         }
+        Collections.reverse(postList);
         return postList;
     }
 

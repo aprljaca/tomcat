@@ -53,7 +53,7 @@ public class PasswordServiceImpl implements PasswordService {
 
         Optional<PasswordResetEntity> passwordResetEntity = passwordResetRepository.findByUserId(userId);
 
-        if(passwordResetEntity.isPresent()){
+        if (passwordResetEntity.isPresent()) {
             passwordResetRepository.delete(passwordResetEntity.get());
         }
 
@@ -160,8 +160,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
-    public void changePassword(Password password) throws UserNotFoundException, InvalidOldPasswordException {
-        User user = userService.findUserByEmail(password.getEmail());
+    public void changePassword(User user, Password password) throws UserNotFoundException, InvalidOldPasswordException {
         Optional<UserEntity> userEntity = userRepository.findByEmail(user.getEmail());
         if (userEntity.isEmpty()) {
             throw new UserNotFoundException("Can't find user!");

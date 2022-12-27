@@ -1,7 +1,6 @@
 package com.tomcat.repository;
 
 import com.tomcat.entity.FollowEntity;
-import com.tomcat.entity.PostEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +13,6 @@ public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
     Optional<FollowEntity> findFollower(Long followerId, Long followingId);
 
     List<FollowEntity> findAllByFollowerId(Long userId);
+
+    List<FollowEntity> findAllByFollowingId(Long userId);
 }
