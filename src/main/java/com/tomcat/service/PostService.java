@@ -20,9 +20,11 @@ public interface PostService {
 
     void setDislike(User user, Post post) throws BadRequestException;
 
-    List<Post> getFollowingPosts(User user) throws UserNotFoundException;
+    List<Post> getFollowingPosts(User user) throws UserNotFoundException, BadRequestException;
 
-    List<Post> getProfilePosts(User user, Long userId) throws UserNotFoundException;
+    List<Post> getProfilePosts(User user, Long userId) throws UserNotFoundException, BadRequestException;
 
     String calculateDuration(OffsetDateTime time);
+
+    Boolean deletePost(User user, Post post) throws BadRequestException;
 }

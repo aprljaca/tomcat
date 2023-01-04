@@ -51,8 +51,8 @@ public class Mapper {
         return new CommentInformation(entity.getPostId(), firstName, lastName, entity.getText(), profilImage, createdTime);
     }
 
-    public ProfileInformation mapUserEntityToProfileInformation(UserEntity user, String profileImage){
-        return new ProfileInformation(user.getId(), user.getFirstName(), user.getLastName(), user.getUserName(), profileImage);
+    public ProfileInformation mapUserEntityToProfileInformation(UserEntity user, String profileImage, Long followersNumber, Long followingNumber){
+        return new ProfileInformation(user.getId(), user.getFirstName(), user.getLastName(), user.getUserName(), profileImage, followersNumber, followingNumber);
     }
 
 }

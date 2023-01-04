@@ -9,5 +9,5 @@ public interface ProfileService {
 
     ProfileInformation getProfileInformation(Long userId) throws UserNotFoundException;
 
-    List<ProfileInformation> getRandomProfiles();
+    List<ProfileInformation> getRandomProfiles(Long userId);
 }

@@ -28,8 +28,8 @@ public class ProfileController {
     }
 
     @GetMapping("/randomProfiles")
-    public List<ProfileInformation> getRandomProfile(){
-        return profileService.getRandomProfiles();
+    public List<ProfileInformation> getRandomProfile(@AuthenticationPrincipal UserEntity userEntity) {
+        return profileService.getRandomProfiles(userEntity.getId());
     }
 
 }

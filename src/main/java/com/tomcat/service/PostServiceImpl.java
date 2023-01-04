@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -87,7 +84,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getFollowingPosts(User user) {
+    public List<Post> getFollowingPosts(User user) throws BadRequestException {
         Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
 
         List<ProfileInformation> followingProfiles = followService.getFollowing(userEntity.get().getId());
@@ -116,7 +113,7 @@ public class PostServiceImpl implements PostService {
             Optional<UserEntity> postBy = userRepository.findById(postEntity.getUserId());
             Post post = new Post(postEntity.getId(), postEntity.getUserId(), postBy.get().getFirstName(), postBy.get().getLastName(), postEntity.getText(),
                     calculateDuration(postEntity.getCreatedTime()), likeEntityList.size(), commentEntityList.size(), imageService.downloadImage(postBy.get().getId()), commentInformationList,
-                    isLiked(user, postEntity.getId()));
+                    isLiked(user, postEntity.getId()), checkIfPostIsMine(userEntity.get().getId(), postEntity.getId()));
 
             postList.add(post);
         }
@@ -126,7 +123,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<Post> getProfilePosts(User loggedUser, Long userId) throws UserNotFoundException {
+    public List<Post> getProfilePosts(User loggedUser, Long userId) throws UserNotFoundException, BadRequestException {
         Optional<UserEntity> userEntity = userRepository.findById(userId);
         if (userEntity.isEmpty()) {
             throw new UserNotFoundException("Can't find user by id!");
@@ -148,12 +145,20 @@ public class PostServiceImpl implements PostService {
 
             Post post = new Post(postEntity.getId(), postEntity.getUserId(), userEntity.get().getFirstName(), userEntity.get().getLastName(), postEntity.getText(),
                     calculateDuration(postEntity.getCreatedTime()), likeEntityList.size(), commentEntityList.size(), imageService.downloadImage(userId), commentInformationList,
-                    isLiked(loggedUser, postEntity.getId()));
+                    isLiked(loggedUser, postEntity.getId()), checkIfPostIsMine(userEntity.get().getId(), postEntity.getId()));
 
             postList.add(post);
         }
         Collections.reverse(postList);
         return postList;
+    }
+
+    public Boolean checkIfPostIsMine(Long userId, Long postId) throws BadRequestException {
+        Optional<PostEntity> postEntity = postRepository.findById(postId);
+        if(postEntity.isEmpty()){
+            throw new BadRequestException("Can't find post!");
+        }
+        return Objects.equals(postEntity.get().getUserId(), userId);
     }
 
     @Override
@@ -170,5 +175,17 @@ public class PostServiceImpl implements PostService {
             return ChronoUnit.DAYS.between(time, now) + " days ago";
         }
         return ChronoUnit.WEEKS.between(time, now) + " weeks ago";
+    }
+
+    @Override
+    public Boolean deletePost(User user, Post post) throws BadRequestException {
+        //TODO obrisati sve lajkove i komentare sa ove objave
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
+        if(checkIfPostIsMine(userEntity.get().getId(), post.getPostId())){
+            Optional<PostEntity> postEntity = postRepository.findById(post.getPostId());
+            postRepository.delete(postEntity.get());
+            return true;
+        }
+        return false;
     }
 }

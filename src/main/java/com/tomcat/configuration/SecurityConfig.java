@@ -1,4 +1,4 @@
-package com.tomcat.security;
+package com.tomcat.configuration;
 
 import com.tomcat.filter.JwtFilter;
 import lombok.AllArgsConstructor;

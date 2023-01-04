@@ -3,12 +3,13 @@ package com.tomcat.controller;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.BadRequestException;
 import com.tomcat.exception.UserNotFoundException;
-import com.tomcat.model.*;
+import com.tomcat.model.CommentRequest;
+import com.tomcat.model.CreatePostRequest;
+import com.tomcat.model.CreatePostResponse;
+import com.tomcat.model.Post;
 import com.tomcat.service.PostService;
-import com.tomcat.service.ProfileService;
 import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,9 +27,17 @@ public class PostController {
     private final Mapper mapper;
 
     @PostMapping("/createPost")
-    public ResponseEntity<CreatePostResponse> createPost(@RequestBody CreatePostRequest request, @AuthenticationPrincipal UserEntity userEntity) throws BadRequestException {
+    public ResponseEntity<CreatePostResponse> createPost(@AuthenticationPrincipal UserEntity userEntity, @RequestBody CreatePostRequest request) throws BadRequestException {
         CreatePostResponse user = postService.createPost(mapper.mapUserEntityToUserDto(userEntity), request);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/deletePost")
+    public ResponseEntity<?> deletePost(@AuthenticationPrincipal UserEntity userEntity, @RequestBody Post post) throws BadRequestException {
+        if( postService.deletePost(mapper.mapUserEntityToUserDto(userEntity), post)){
+            return new ResponseEntity<>("Post successfully deleted", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Post can't be deleted", HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/like")
@@ -44,7 +53,7 @@ public class PostController {
     }
 
     @PostMapping("/commentPost")
-    public ResponseEntity<?> commentPost(@RequestBody CommentRequest request, @AuthenticationPrincipal UserEntity userEntity) throws BadRequestException {
+    public ResponseEntity<String> commentPost(@RequestBody CommentRequest request, @AuthenticationPrincipal UserEntity userEntity) throws BadRequestException {
         postService.commentPost(request, userEntity);
         return new ResponseEntity<>("Post successfully commented", HttpStatus.CREATED);
     }
@@ -56,12 +65,15 @@ public class PostController {
     }
 
     @GetMapping("/followingPosts")
-    public List<Post> getFollowingPosts(@AuthenticationPrincipal UserEntity userEntity) throws UserNotFoundException {
+    public List<Post> getFollowingPosts(@AuthenticationPrincipal UserEntity userEntity) throws UserNotFoundException, BadRequestException {
         return postService.getFollowingPosts(mapper.mapUserEntityToUserDto(userEntity));
     }
 
     @GetMapping("/profilePosts")
-    public List<Post> getProfilePosts(@AuthenticationPrincipal UserEntity userEntity, @RequestParam("userId") Long userId) throws UserNotFoundException {
+    public List<Post> getProfilePosts(@AuthenticationPrincipal UserEntity userEntity, @RequestParam("userId") Long userId) throws UserNotFoundException, BadRequestException {
         return postService.getProfilePosts(mapper.mapUserEntityToUserDto(userEntity), userId);
     }
+
+
+
 }

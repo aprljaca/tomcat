@@ -23,13 +23,10 @@ public class FollowServiceImpl implements FollowService {
 
     @Autowired
     private FollowRepository followRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private ImageRepository imageRepository;
-
     @Autowired
     private ImageService imageService;
 
@@ -70,23 +67,6 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public List<ProfileInformation> getFollowing(Long userId) {
-        List<FollowEntity> followEntities = followRepository.findAllByFollowerId(userId);
-
-        List<ProfileInformation> profileInformations = new ArrayList<>();
-
-        for (FollowEntity followEntity : followEntities) {
-            Optional<UserEntity> userEntity = userRepository.findById(followEntity.getFollowingId());
-
-            if (userEntity.isPresent()) {
-                ProfileInformation profileInformation = new ProfileInformation(userEntity.get().getId(), userEntity.get().getFirstName(), userEntity.get().getLastName(), userEntity.get().getUserName(), imageService.downloadImage(userEntity.get().getId()));
-                profileInformations.add(profileInformation);
-            }
-        }
-        return profileInformations;
-    }
-
-    @Override
     public List<ProfileInformation> getFollowers(Long userId) {
         List<FollowEntity> followEntities = followRepository.findAllByFollowingId(userId);
 
@@ -96,11 +76,43 @@ public class FollowServiceImpl implements FollowService {
             Optional<UserEntity> userEntity = userRepository.findById(followEntity.getFollowerId());
 
             if (userEntity.isPresent()) {
-                ProfileInformation profileInformation = new ProfileInformation(userEntity.get().getId(), userEntity.get().getFirstName(), userEntity.get().getLastName(), userEntity.get().getUserName(), imageService.downloadImage(userEntity.get().getId()));
+                ProfileInformation profileInformation = new ProfileInformation(userEntity.get().getId(), userEntity.get().getFirstName(), userEntity.get().getLastName(),
+                        userEntity.get().getUserName(), imageService.downloadImage(userEntity.get().getId()), getFollowersNumber(userId), getFollowingNumber(userId));
                 profileInformations.add(profileInformation);
             }
         }
         return profileInformations;
     }
+
+    @Override
+    public Long getFollowersNumber(Long userId){
+        return (long) followRepository.findAllByFollowingId(userId).size();
+    }
+
+    @Override
+    public Long getFollowingNumber(Long userId){
+        return (long) followRepository.findAllByFollowerId(userId).size();
+    }
+
+    @Override
+    public List<ProfileInformation> getFollowing(Long userId) {
+        List<FollowEntity> followEntities = followRepository.findAllByFollowerId(userId);
+
+        List<ProfileInformation> profileInformations = new ArrayList<>();
+
+        for (FollowEntity followEntity : followEntities) {
+            Optional<UserEntity> userEntity = userRepository.findById(followEntity.getFollowingId());
+
+            if (userEntity.isPresent()) {
+                ProfileInformation profileInformation = new ProfileInformation(userEntity.get().getId(), userEntity.get().getFirstName(), userEntity.get().getLastName(),
+                        userEntity.get().getUserName(), imageService.downloadImage(userEntity.get().getId()), getFollowersNumber(userId), getFollowingNumber(userId));
+                profileInformations.add(profileInformation);
+            }
+        }
+        return profileInformations;
+    }
+
+
+
 
 }

@@ -8,6 +8,7 @@ import com.tomcat.repository.*;
 import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,10 +18,14 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-
-    private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
-    private final ImageService imageService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ImageRepository imageRepository;
+    @Autowired
+    private  ImageService imageService;
+    @Autowired
+    private FollowService followService;
     private final Mapper mapper;
 
     @Override
@@ -30,17 +35,19 @@ public class ProfileServiceImpl implements ProfileService {
         if (userEntity.isEmpty()) {
             throw new UserNotFoundException("Can't find user by id!");
         }
-        return new ProfileInformation(userId, userEntity.get().getFirstName(), userEntity.get().getLastName(), userEntity.get().getUserName(), imageService.downloadImage(userId));
+
+        return new ProfileInformation(userId, userEntity.get().getFirstName(), userEntity.get().getLastName(),
+                userEntity.get().getUserName(), imageService.downloadImage(userId), followService.getFollowersNumber(userId), followService.getFollowingNumber(userId));
     }
 
     @Override
-    public List<ProfileInformation> getRandomProfiles() {
-        List<UserEntity> userEntities = userRepository.findRandomProfiles();
+    public List<ProfileInformation> getRandomProfiles(Long userId) {
+        List<UserEntity> userEntities = userRepository.findRandomProfiles(userId);
         List<ProfileInformation> randomProfilesList = new ArrayList<>();
 
         for(UserEntity userEntity: userEntities){
             String profileImage = imageService.downloadImage(userEntity.getId());
-            randomProfilesList.add(mapper.mapUserEntityToProfileInformation(userEntity, profileImage));
+            randomProfilesList.add(mapper.mapUserEntityToProfileInformation(userEntity, profileImage, followService.getFollowersNumber(userId), followService.getFollowingNumber(userId)));
         }
         return randomProfilesList;
     }

@@ -23,4 +23,5 @@ public class Post {
     private String profileImage;
     private List<CommentInformation> commentInfoList;
     private Boolean isLiked;
+    private Boolean myPost;
 }

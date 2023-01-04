@@ -15,5 +15,7 @@ public class ProfileInformation {
     private String lastName;
     private String userName;
     private String profileImage;
+    private Long followersNumber;
+    private Long followingNumber;
     
 }

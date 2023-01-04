@@ -17,4 +17,8 @@ public interface FollowService {
     List<ProfileInformation> getFollowing(Long userId);
 
     List<ProfileInformation> getFollowers(Long userId);
+
+    Long getFollowersNumber(Long userId);
+
+    Long getFollowingNumber(Long userId);
 }
