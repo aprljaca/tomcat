@@ -55,4 +55,8 @@ public class Mapper {
         return new ProfileInformation(user.getId(), user.getFirstName(), user.getLastName(), user.getUserName(), profileImage, followersNumber, followingNumber);
     }
 
+    public NotificationInformation mapUserEntityToNotificationInformation(UserEntity user, String profileImage, Long postId){
+        return new NotificationInformation(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), profileImage, postId);
+    }
+
 }

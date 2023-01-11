@@ -49,3 +49,12 @@ CREATE TABLE IF NOT EXISTS "follows" (
     follower_id SERIAL NOT NULL,
     following_id SERIAL NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "notifications" (
+    id SERIAL PRIMARY KEY,
+    user_id SERIAL NOT NULL,
+    unread_notification SERIAL NOT NULL,
+    unread_follow SERIAL NOT NULL,
+    unread_comment SERIAL NOT NULL,
+    unread_like SERIAL NOT NULL
+);

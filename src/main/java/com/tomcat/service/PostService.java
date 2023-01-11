@@ -12,9 +12,9 @@ public interface PostService {
 
     CreatePostResponse createPost(User user, CreatePostRequest request) throws BadRequestException;
 
-    void setLike(User user, Post post);
+    void setLike(User user, Post post) throws UserNotFoundException;
 
-    void commentPost(CommentRequest request, UserEntity userEntity) throws BadRequestException;
+    void commentPost(User user, CommentRequest request) throws BadRequestException, UserNotFoundException;
 
     Boolean isLiked(User user, Long postId);
 

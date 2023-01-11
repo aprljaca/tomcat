@@ -1,13 +1,13 @@
 package com.tomcat.service;
 
+import com.tomcat.exception.BadRequestException;
 import com.tomcat.exception.UserAlreadyExistsException;
 import com.tomcat.exception.UserNotFoundException;
-import com.tomcat.model.LoginRequest;
-import com.tomcat.model.RegisterRequest;
-import com.tomcat.model.RegisterResponse;
-import com.tomcat.model.User;
+import com.tomcat.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -16,5 +16,7 @@ public interface UserService {
     ResponseEntity<?> loginUser(LoginRequest request) throws BadCredentialsException;
 
     User findUserByEmail(String email) throws UserNotFoundException;
+
+    List<ProfileInformation> getSearchedUser(String inputValue) throws BadRequestException;
 }
 

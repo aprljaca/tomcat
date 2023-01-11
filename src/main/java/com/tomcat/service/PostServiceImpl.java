@@ -13,6 +13,7 @@ import com.tomcat.repository.PostRepository;
 import com.tomcat.repository.UserRepository;
 import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -37,6 +38,10 @@ public class PostServiceImpl implements PostService {
 
     private final FollowService followService;
 
+    private final NotificationService notificationService;
+
+    private final SimpMessagingTemplate messagingTemplate;
+
     @Override
     public CreatePostResponse createPost(User user, CreatePostRequest request) throws BadRequestException {
         Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
@@ -49,21 +54,36 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void setLike(User user, Post post) {
+    public void setLike(User user, Post post) throws UserNotFoundException {
         Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
         if (!isLiked(user, post.getPostId())) {
             LikeEntity like = new LikeEntity(post.getPostId(), userEntity.get().getId(), OffsetDateTime.now());
             likeRepository.save(like);
+
+            Optional<PostEntity> postEntity = postRepository.findById(post.getPostId());
+            Optional<UserEntity> postOwnerEntity = userRepository.findById(postEntity.get().getUserId());
+
+            notificationService.increaseUnreadLike(mapper.mapUserEntityToUserDto(postOwnerEntity.get()));
+            messagingTemplate.convertAndSend("/topic/notification/"+postOwnerEntity.get().getId(),
+                    "Vašu objavu lajka "+ user.getFirstName() + " " + user.getLastName());
         }
     }
 
     @Override
-    public void commentPost(CommentRequest request, UserEntity userEntity) throws BadRequestException {
+    public void commentPost(User user, CommentRequest request) throws BadRequestException, UserNotFoundException {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(user.getUserName());
         if (request.getText().isEmpty()) {
             throw new BadRequestException("Comment can not be empty!");
         }
-        CommentEntity comment = new CommentEntity(request.getPostId(), userEntity.getId(), request.getText(), OffsetDateTime.now());
+        Optional<PostEntity> postEntity = postRepository.findById(request.getPostId());
+        Optional<UserEntity> postOwnerEntity = userRepository.findById(postEntity.get().getUserId());
+
+        CommentEntity comment = new CommentEntity(request.getPostId(), userEntity.get().getId(), request.getText(), OffsetDateTime.now());
         commentRepository.save(comment);
+        notificationService.increaseUnreadComment(mapper.mapUserEntityToUserDto(postOwnerEntity.get()));
+        messagingTemplate.convertAndSend("/topic/notification/"+postOwnerEntity.get().getId(),
+                "Vašu objavu komentira "+ user.getFirstName() + " " + user.getLastName());
+
     }
 
     @Override

@@ -1,11 +1,9 @@
 package com.tomcat.controller;
 
 import com.tomcat.entity.UserEntity;
+import com.tomcat.exception.BadRequestException;
 import com.tomcat.exception.UserAlreadyExistsException;
-import com.tomcat.model.LoginRequest;
-import com.tomcat.model.ProfileInformation;
-import com.tomcat.model.RegisterRequest;
-import com.tomcat.model.RegisterResponse;
+import com.tomcat.model.*;
 import com.tomcat.service.UserService;
 import com.tomcat.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -18,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,6 +51,11 @@ public class UserController {
     @GetMapping("/getUserId")
     public ResponseEntity<?> getUserId(@AuthenticationPrincipal UserEntity userEntity) {
         return new ResponseEntity<>(userEntity.getId(), HttpStatus.OK);
+    }
+
+    @PostMapping("/searchUser")
+    public List<ProfileInformation> getUsers(@RequestBody Email email) throws BadRequestException {
+        return userService.getSearchedUser(email.getEmail());
     }
 
 }

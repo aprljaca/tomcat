@@ -34,14 +34,14 @@ public class PostController {
 
     @DeleteMapping("/deletePost")
     public ResponseEntity<?> deletePost(@AuthenticationPrincipal UserEntity userEntity, @RequestBody Post post) throws BadRequestException {
-        if( postService.deletePost(mapper.mapUserEntityToUserDto(userEntity), post)){
+        if (postService.deletePost(mapper.mapUserEntityToUserDto(userEntity), post)) {
             return new ResponseEntity<>("Post successfully deleted", HttpStatus.OK);
         }
         return new ResponseEntity<>("Post can't be deleted", HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/like")
-    public ResponseEntity<?> like(@AuthenticationPrincipal UserEntity userEntity, @RequestBody Post post) {
+    public ResponseEntity<?> like(@AuthenticationPrincipal UserEntity userEntity, @RequestBody Post post) throws UserNotFoundException {
         postService.setLike(mapper.mapUserEntityToUserDto(userEntity), post);
         return new ResponseEntity<>("Post successfully liked", HttpStatus.CREATED);
     }
@@ -53,8 +53,8 @@ public class PostController {
     }
 
     @PostMapping("/commentPost")
-    public ResponseEntity<String> commentPost(@RequestBody CommentRequest request, @AuthenticationPrincipal UserEntity userEntity) throws BadRequestException {
-        postService.commentPost(request, userEntity);
+    public ResponseEntity<String> commentPost(@AuthenticationPrincipal UserEntity userEntity, @RequestBody CommentRequest request) throws BadRequestException, UserNotFoundException {
+        postService.commentPost(mapper.mapUserEntityToUserDto(userEntity), request);
         return new ResponseEntity<>("Post successfully commented", HttpStatus.CREATED);
     }
 
@@ -73,7 +73,4 @@ public class PostController {
     public List<Post> getProfilePosts(@AuthenticationPrincipal UserEntity userEntity, @RequestParam("userId") Long userId) throws UserNotFoundException, BadRequestException {
         return postService.getProfilePosts(mapper.mapUserEntityToUserDto(userEntity), userId);
     }
-
-
-
 }

@@ -1,6 +1,7 @@
 package com.tomcat.service;
 
 import com.tomcat.entity.FollowEntity;
+import com.tomcat.entity.PostEntity;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.BadRequestException;
 import com.tomcat.exception.UserNotFoundException;
@@ -9,8 +10,10 @@ import com.tomcat.model.User;
 import com.tomcat.repository.FollowRepository;
 import com.tomcat.repository.ImageRepository;
 import com.tomcat.repository.UserRepository;
+import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +32,10 @@ public class FollowServiceImpl implements FollowService {
     private ImageRepository imageRepository;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private NotificationService notificationService;
+    private final Mapper mapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public void followUser(User user, Long userId) throws BadRequestException, UserNotFoundException {
@@ -41,6 +48,12 @@ public class FollowServiceImpl implements FollowService {
             throw new BadRequestException("Bad request!");
         }
         followRepository.save(followEntity);
+
+        Optional<UserEntity> notifyUser = userRepository.findById(userId);
+        notificationService.increaseUnreadFollow(mapper.mapUserEntityToUserDto(notifyUser.get()));
+
+        messagingTemplate.convertAndSend("/topic/notification/"+notifyUser.get().getId(),
+                "Zapratio vas je korisnik "+ user.getFirstName() + " " + user.getLastName());
     }
 
     @Override

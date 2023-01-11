@@ -4,11 +4,11 @@ import com.tomcat.entity.ProfileImageEntity;
 import com.tomcat.entity.UserEntity;
 import com.tomcat.exception.UserNotFoundException;
 import com.tomcat.model.ProfileInformation;
-import com.tomcat.repository.*;
+import com.tomcat.repository.ImageRepository;
+import com.tomcat.repository.UserRepository;
 import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Autowired
     private ImageRepository imageRepository;
     @Autowired
-    private  ImageService imageService;
+    private ImageService imageService;
     @Autowired
     private FollowService followService;
     private final Mapper mapper;
@@ -45,9 +45,9 @@ public class ProfileServiceImpl implements ProfileService {
         List<UserEntity> userEntities = userRepository.findRandomProfiles(userId);
         List<ProfileInformation> randomProfilesList = new ArrayList<>();
 
-        for(UserEntity userEntity: userEntities){
+        for (UserEntity userEntity : userEntities) {
             String profileImage = imageService.downloadImage(userEntity.getId());
-            randomProfilesList.add(mapper.mapUserEntityToProfileInformation(userEntity, profileImage, followService.getFollowersNumber(userId), followService.getFollowingNumber(userId)));
+            randomProfilesList.add(mapper.mapUserEntityToProfileInformation(userEntity, profileImage, followService.getFollowersNumber(userEntity.getId()), followService.getFollowingNumber(userEntity.getId())));
         }
         return randomProfilesList;
     }

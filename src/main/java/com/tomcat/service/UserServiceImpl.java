@@ -2,6 +2,7 @@ package com.tomcat.service;
 
 import com.tomcat.entity.ProfileImageEntity;
 import com.tomcat.entity.UserEntity;
+import com.tomcat.exception.BadRequestException;
 import com.tomcat.exception.UserAlreadyExistsException;
 import com.tomcat.exception.UserNotFoundException;
 import com.tomcat.model.*;
@@ -18,6 +19,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final ImageRepository imageRepository;
+
+    private final ImageService imageService;
 
     private final Mapper mapper;
 
@@ -87,6 +92,28 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("Can't find user by email!");
         }
         return mapper.mapUserEntityToUserDto(userEntity.get());
+    }
+
+    @Override
+    public List<ProfileInformation> getSearchedUser(String inputValue) throws BadRequestException {
+
+        String[] arrOfStr = inputValue.split(" ");
+        if (arrOfStr.length <= 1) {
+            throw new BadRequestException("Bad request!");
+        }
+        //if arrOfStr.length==2
+        List<UserEntity> userEntities = userRepository.findByFirstNameIgnoreCaseContainingAndLastNameIgnoreCaseContaining(arrOfStr[0], arrOfStr[1]);
+        if (userEntities.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ProfileInformation> users = new ArrayList<>();
+
+        for (UserEntity userEntity : userEntities) {
+            String profileImage = imageService.downloadImage(userEntity.getId());
+            users.add(mapper.mapUserEntityToProfileInformation(userEntity, profileImage, 0L, 0L));
+        }
+        return users;
     }
 
 }
