@@ -8,6 +8,7 @@ import com.tomcat.repository.*;
 import com.tomcat.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,20 +22,18 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
-
     @Autowired
     private FollowRepository followRepository;
-
     @Autowired
     private CommentRepository commentRepository;
-
     @Autowired
     private LikeRepository likeRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ImageService imageService;
-
+    @Autowired
+    @Lazy
     private FollowService followService;
 
     private final Mapper mapper;
